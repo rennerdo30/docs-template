@@ -1,0 +1,48 @@
+{
+  "name": "starlight-theme-luminous-void",
+  "version": "1.0.0",
+  "description": "Luminous Void theme for Astro Starlight - dark-first design with orange/cyan accents",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./styles.css"
+  },
+  "files": [
+    "dist",
+    "styles.css"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "starlight",
+    "astro",
+    "theme",
+    "documentation",
+    "dark-mode",
+    "luminous-void"
+  ],
+  "author": "rennerdo30",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rennerdo30/docs-template.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rennerdo30/docs-template/issues"
+  },
+  "homepage": "https://github.com/rennerdo30/docs-template#readme",
+  "peerDependencies": {
+    "@astrojs/starlight": ">=0.30.0"
+  },
+  "devDependencies": {
+    "@astrojs/starlight": "^0.32.0",
+    "typescript": "^5.7.0"
+  }
+}

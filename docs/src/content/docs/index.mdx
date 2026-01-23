@@ -1,0 +1,55 @@
+---
+title: Luminous Void Theme
+description: A dark-first documentation theme for Astro Starlight
+template: splash
+hero:
+  tagline: Beautiful documentation with minimal setup. Dark and light modes included.
+  actions:
+    - text: Get Started
+      link: /docs-template/getting-started/installation/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/rennerdo30/docs-template
+      icon: external
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+## Features
+
+<CardGrid stagger>
+  <Card title="Minimal Setup" icon="rocket">
+    Just one line in your config. All styling handled by the theme package.
+  </Card>
+  <Card title="Dark & Light Modes" icon="sun">
+    Beautiful themes for both preferences with WCAG-compliant contrast.
+  </Card>
+  <Card title="Easy Updates" icon="refresh">
+    Update the theme across all your projects with a single `npm update`.
+  </Card>
+  <Card title="Custom Typography" icon="pencil">
+    Satoshi for headings, Inter for body text, Fira Code for code blocks.
+  </Card>
+</CardGrid>
+
+## Quick Start
+
+```bash
+npm install starlight-theme-luminous-void
+```
+
+```js title="astro.config.mjs"
+import luminousVoid from "starlight-theme-luminous-void";
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      title: "My Docs",
+      plugins: [luminousVoid()],
+    }),
+  ],
+});
+```
+
+That's it! Your documentation now has the Luminous Void theme.

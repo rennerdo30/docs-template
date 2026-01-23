@@ -1,0 +1,100 @@
+---
+title: Customization
+description: Customize colors, fonts, and more
+---
+
+import { Aside, Code } from "@astrojs/starlight/components";
+
+## Color Scheme
+
+The Luminous Void theme uses CSS custom properties that you can override.
+
+### Dark Mode Colors
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--sl-color-bg` | `#0a0a0f` | Page background |
+| `--sl-color-accent` | `#f97316` | Primary accent (orange) |
+| `--lv-accent-cyan` | `#22d3ee` | Secondary accent (cyan) |
+| `--sl-color-text` | `#fafafa` | Primary text |
+| `--sl-color-gray-3` | `#94a3b8` | Secondary text |
+
+### Light Mode Colors
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--sl-color-bg` | `#fafafa` | Page background |
+| `--sl-color-accent` | `#ea580c` | Primary accent (orange) |
+| `--lv-accent-cyan` | `#0891b2` | Secondary accent (cyan) |
+| `--sl-color-text` | `#18181b` | Primary text |
+| `--sl-color-gray-3` | `#52525b` | Secondary text |
+
+### Overriding Colors
+
+Create a custom CSS file to override any variables:
+
+```css title="src/styles/custom.css"
+/* Change the accent color to blue */
+:root,
+[data-theme="dark"] {
+  --sl-color-accent: #3b82f6;
+  --sl-color-accent-low: #1e3a5f;
+  --sl-color-accent-high: #93c5fd;
+}
+
+[data-theme="light"] {
+  --sl-color-accent: #2563eb;
+  --sl-color-accent-low: #dbeafe;
+  --sl-color-accent-high: #1e40af;
+}
+```
+
+Then add it to your config:
+
+```js title="astro.config.mjs"
+starlight({
+  plugins: [luminousVoid()],
+  customCss: ["./src/styles/custom.css"],
+});
+```
+
+## Typography
+
+The theme uses three font families:
+
+| Purpose | Font | CSS Variable |
+|---------|------|--------------|
+| Headings | Satoshi | `--lv-font-heading` |
+| Body text | Inter | `--sl-font` |
+| Code | Fira Code | `--sl-font-mono` |
+
+### Custom Fonts
+
+To use different fonts, override the CSS variables:
+
+```css title="src/styles/custom.css"
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap");
+
+:root {
+  --lv-font-heading: "Space Grotesk", sans-serif;
+}
+```
+
+<Aside type="caution">
+  Ensure your custom fonts are loaded before using them. Import them at the top of your CSS file.
+</Aside>
+
+## Component Overrides
+
+For deeper customization, you can override Starlight components:
+
+```js title="astro.config.mjs"
+starlight({
+  plugins: [luminousVoid()],
+  components: {
+    Header: "./src/components/CustomHeader.astro",
+  },
+});
+```
+
+See the [Starlight docs](https://starlight.astro.build/guides/overriding-components/) for available components.

@@ -1,0 +1,82 @@
+---
+title: Configuration
+description: Configure the Luminous Void theme options
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Theme Options
+
+The Luminous Void theme works out of the box with sensible defaults. No configuration required!
+
+```js title="astro.config.mjs"
+import luminousVoid from "starlight-theme-luminous-void";
+
+starlight({
+  plugins: [luminousVoid()],
+});
+```
+
+## Starlight Configuration
+
+You can use all standard Starlight configuration options alongside the theme:
+
+```js title="astro.config.mjs"
+starlight({
+  title: "My Documentation",
+  description: "A great project with great docs",
+  plugins: [luminousVoid()],
+
+  // Social links
+  social: [
+    { icon: "github", label: "GitHub", href: "https://github.com/you/repo" },
+  ],
+
+  // Sidebar navigation
+  sidebar: [
+    { label: "Home", slug: "index" },
+    {
+      label: "Guides",
+      items: [
+        { label: "Getting Started", slug: "guides/getting-started" },
+        { label: "Advanced", slug: "guides/advanced" },
+      ],
+    },
+  ],
+
+  // Enable edit links
+  editLink: {
+    baseUrl: "https://github.com/you/repo/edit/main/docs/",
+  },
+});
+```
+
+## Site URL
+
+For GitHub Pages deployment, configure your site URL:
+
+```js title="astro.config.mjs"
+export default defineConfig({
+  site: "https://username.github.io",
+  base: "/repo-name",
+  // ...
+});
+```
+
+<Aside type="tip">
+  The `base` is only needed if deploying to a subdirectory (like GitHub project pages).
+  For custom domains or user/organization pages, you can omit it.
+</Aside>
+
+## Custom CSS
+
+You can add additional custom CSS that loads after the theme:
+
+```js title="astro.config.mjs"
+starlight({
+  plugins: [luminousVoid()],
+  customCss: ["./src/styles/custom.css"],
+});
+```
+
+Your custom CSS will override theme styles where needed.

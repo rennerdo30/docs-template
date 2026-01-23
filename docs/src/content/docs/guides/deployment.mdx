@@ -1,0 +1,111 @@
+---
+title: Deployment
+description: Deploy your documentation to GitHub Pages
+---
+
+import { Steps, Aside, FileTree } from "@astrojs/starlight/components";
+
+## GitHub Pages
+
+The easiest way to deploy is using GitHub Actions with the official Astro action.
+
+### Setup
+
+<Steps>
+1. Configure your site URL in `astro.config.mjs`:
+   ```js title="astro.config.mjs"
+   export default defineConfig({
+     site: "https://username.github.io",
+     base: "/repo-name", // Only for project pages
+     // ...
+   });
+   ```
+
+2. Create the workflow file:
+   <FileTree>
+   - .github/
+     - workflows/
+       - deploy.yml
+   </FileTree>
+
+3. Add this workflow:
+   ```yaml title=".github/workflows/deploy.yml"
+   name: Deploy to GitHub Pages
+
+   on:
+     push:
+       branches: [main]
+     workflow_dispatch:
+
+   permissions:
+     contents: read
+     pages: write
+     id-token: write
+
+   jobs:
+     build:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v4
+         - uses: actions/setup-node@v4
+           with:
+             node-version: 20
+             cache: npm
+         - run: npm ci
+         - run: npm run build
+         - uses: actions/upload-pages-artifact@v3
+           with:
+             path: ./dist
+
+     deploy:
+       needs: build
+       runs-on: ubuntu-latest
+       environment:
+         name: github-pages
+         url: ${{ steps.deployment.outputs.page_url }}
+       steps:
+         - id: deployment
+           uses: actions/deploy-pages@v4
+   ```
+
+4. Enable GitHub Pages in your repository:
+   - Go to Settings > Pages
+   - Set Source to "GitHub Actions"
+
+5. Push to `main` branch to trigger deployment.
+</Steps>
+
+<Aside type="tip">
+  The workflow caches npm dependencies for faster builds.
+</Aside>
+
+## Custom Domain
+
+To use a custom domain:
+
+<Steps>
+1. Add a `CNAME` file in your `public/` folder:
+   ```
+   docs.example.com
+   ```
+
+2. Update your `astro.config.mjs`:
+   ```js
+   export default defineConfig({
+     site: "https://docs.example.com",
+     // Remove base if using apex domain
+   });
+   ```
+
+3. Configure DNS at your domain registrar to point to GitHub Pages.
+</Steps>
+
+## Other Platforms
+
+Astro Starlight works with any static hosting:
+
+- **Vercel**: Zero-config deployment
+- **Netlify**: Zero-config deployment
+- **Cloudflare Pages**: Zero-config deployment
+
+See the [Astro deployment guides](https://docs.astro.build/en/guides/deploy/) for detailed instructions.

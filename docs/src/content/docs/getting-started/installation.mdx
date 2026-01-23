@@ -1,0 +1,75 @@
+---
+title: Installation
+description: How to install the Luminous Void theme for your Starlight docs
+---
+
+import { Steps, Tabs, TabItem } from "@astrojs/starlight/components";
+
+## Requirements
+
+- Node.js 18 or higher
+- An existing Astro Starlight project, or create a new one
+
+## Install the Theme
+
+<Tabs>
+  <TabItem label="npm">
+    ```bash
+    npm install starlight-theme-luminous-void
+    ```
+  </TabItem>
+  <TabItem label="pnpm">
+    ```bash
+    pnpm add starlight-theme-luminous-void
+    ```
+  </TabItem>
+  <TabItem label="yarn">
+    ```bash
+    yarn add starlight-theme-luminous-void
+    ```
+  </TabItem>
+</Tabs>
+
+## Configure Starlight
+
+Add the theme plugin to your `astro.config.mjs`:
+
+```js title="astro.config.mjs" ins={2,9}
+import { defineConfig } from "astro/config";
+import luminousVoid from "starlight-theme-luminous-void";
+import starlight from "@astrojs/starlight";
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      title: "My Docs",
+      plugins: [luminousVoid()],
+    }),
+  ],
+});
+```
+
+## New Project Setup
+
+If you're starting fresh, create a new Starlight project:
+
+<Steps>
+1. Create a new Astro project with Starlight:
+   ```bash
+   npm create astro@latest -- --template starlight
+   ```
+
+2. Install the Luminous Void theme:
+   ```bash
+   npm install starlight-theme-luminous-void
+   ```
+
+3. Add the plugin to your config as shown above.
+
+4. Start the dev server:
+   ```bash
+   npm run dev
+   ```
+</Steps>
+
+Your documentation site is now running with the Luminous Void theme!

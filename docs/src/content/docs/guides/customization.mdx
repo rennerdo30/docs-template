@@ -24,30 +24,61 @@ The Luminous Void theme uses CSS custom properties that you can override.
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `--sl-color-bg` | `#fafafa` | Page background |
-| `--sl-color-accent` | `#ea580c` | Primary accent (orange) |
-| `--lv-accent-cyan` | `#0891b2` | Secondary accent (cyan) |
+| `--sl-color-accent` | `#c2410c` | Primary accent (orange) |
+| `--lv-accent-cyan` | `#0e7490` | Secondary accent (cyan) |
 | `--sl-color-text` | `#18181b` | Primary text |
 | `--sl-color-gray-3` | `#52525b` | Secondary text |
 
+The light accents are darker than their dark-mode counterparts so that text and
+filled buttons both stay above the WCAG AA contrast ratio of 4.5:1.
+
+### Recoloring the accents
+
+The quickest route is the plugin options, which set both accents for you:
+
+```js title="astro.config.mjs"
+starlight({
+  plugins: [
+    luminousVoid({
+      accentColor: "#a855f7",
+      secondaryAccentColor: "#34d399",
+    }),
+  ],
+});
+```
+
+Buttons, tints, focus rings and the sidebar rail are all mixed from
+`--sl-color-accent`, so they follow along. Pick colors that have enough contrast
+on both a near-black and a near-white background, since the options apply to
+both modes.
+
 ### Overriding Colors
 
-Create a custom CSS file to override any variables:
+For per-mode control, create a custom CSS file:
 
 ```css title="src/styles/custom.css"
 /* Change the accent color to blue */
 :root,
-[data-theme="dark"] {
+:root[data-theme="dark"] {
   --sl-color-accent: #3b82f6;
   --sl-color-accent-low: #1e3a5f;
   --sl-color-accent-high: #93c5fd;
+  --lv-on-accent: #0a0a0f; /* text drawn on top of the accent */
 }
 
-[data-theme="light"] {
-  --sl-color-accent: #2563eb;
+:root[data-theme="light"] {
+  --sl-color-accent: #1d4ed8;
   --sl-color-accent-low: #dbeafe;
   --sl-color-accent-high: #1e40af;
+  --lv-on-accent: #ffffff;
 }
 ```
+
+<Aside type="caution">
+  Use `:root[data-theme="light"]`, not `[data-theme="light"]`. Starlight declares
+  its own light palette on `:root[data-theme='light']`, which outranks the
+  shorter selector and would silently win.
+</Aside>
 
 Then add it to your config:
 

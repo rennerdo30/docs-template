@@ -1,94 +1,178 @@
 /**
- * Luminous Void Theme for Astro Starlight
- * Dark-first design inspired by renner.dev
+ * Luminous Void — a dark-first theme for Astro Starlight
  *
- * Colors:
- * - Dark BG: #0a0a0f
- * - Orange accent: #f97316
- * - Cyan accent: #22d3ee
+ * The whole theme is this one stylesheet. It works by overriding Starlight's
+ * `--sl-color-*` custom properties and adding a small set of `--lv-*` tokens of
+ * its own, so everything (radii, motion, shadows, accents) can be retuned from
+ * the token blocks below without touching the rules further down.
+ *
+ * Layers, in order:
+ *   1. Font imports
+ *   2. Design tokens (radius / motion / elevation / layout)
+ *   3. Colour palette — dark (default), then light
+ *   4. Typography
+ *   5. Components (focus, header, sidebar, content, code, buttons, cards,
+ *      search, tables, footer)
+ *   6. Motion, scrollbars, print
+ *
+ * Specificity note: Starlight's light-mode palette is declared on
+ * `:root[data-theme='light']`, so a plain `[data-theme='light']` block loses to
+ * it. The light block below therefore matches the same selector shape.
  */
 
 /* ============================================
-   FONT IMPORTS
+   1. FONT IMPORTS
    ============================================ */
 
-/* Satoshi - Headings */
+/* Satoshi — headings */
 @import url("https://api.fontshare.com/v2/css?f[]=satoshi@700,900&display=swap");
 
-/* Inter - Body text */
+/* Inter — body text */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
-/* Fira Code - Monospace */
+/* Fira Code — monospace */
 @import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap");
 
 /* ============================================
-   DARK MODE (DEFAULT)
+   2. DESIGN TOKENS
+   ============================================ */
+
+:root {
+  /* Radii */
+  --lv-radius-sm: 0.25rem; /* inline code, small chips */
+  --lv-radius-md: 0.5rem; /* buttons, inputs, code blocks */
+  --lv-radius-lg: 0.75rem; /* cards, panels */
+
+  /* Motion — every transition/animation in the theme uses these */
+  --lv-duration-fast: 120ms;
+  --lv-duration-base: 200ms;
+  --lv-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Focus ring */
+  --lv-focus-width: 2px;
+  --lv-focus-offset: 2px;
+
+  /* Header blur strength */
+  --lv-header-blur: 12px;
+
+  /* Scrollbar thickness */
+  --lv-scrollbar-size: 8px;
+
+  /* Sticky-header offset for anchor jumps */
+  --lv-scroll-offset: calc(var(--sl-nav-height) + 1rem);
+
+  /* Accent-derived values. These are mixed from `--sl-color-accent` at use
+     time, so overriding that one property (or passing `accentColor` to the
+     plugin) recolours buttons, tints and glows with it. */
+  --lv-accent-gradient: linear-gradient(
+    135deg,
+    var(--sl-color-accent),
+    color-mix(in srgb, var(--sl-color-accent) 78%, #000)
+  );
+  /* Hover moves the accent towards `--lv-accent-hover-mix`: lighter on dark
+     backgrounds, darker on light ones, so `--lv-on-accent` stays readable. */
+  --lv-accent-gradient-hover: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--sl-color-accent) 82%, var(--lv-accent-hover-mix)),
+    var(--sl-color-accent)
+  );
+  --lv-accent-tint: color-mix(in srgb, var(--sl-color-accent) 12%, transparent);
+  --lv-accent-glow: color-mix(in srgb, var(--sl-color-accent) 28%, transparent);
+  --lv-selection-bg: color-mix(
+    in srgb,
+    var(--sl-color-accent) 32%,
+    transparent
+  );
+}
+
+/* ============================================
+   3a. COLOUR PALETTE — DARK (DEFAULT)
    ============================================ */
 
 :root,
-[data-theme="dark"] {
-  /* === Background Colors === */
+:root[data-theme="dark"],
+[data-theme="dark"] ::backdrop {
+  /* Backgrounds */
   --sl-color-bg: #0a0a0f;
   --sl-color-bg-nav: #0a0a0f;
   --sl-color-bg-sidebar: #0a0a0f;
   --sl-color-bg-inline-code: #18181f;
 
-  /* === Text Colors === */
+  /* Text */
   --sl-color-text: #fafafa;
   --sl-color-text-accent: #22d3ee;
+  --sl-color-text-invert: #0a0a0f;
 
-  /* === Accent Colors (Orange Primary) === */
+  /* Primary accent — orange (7.1:1 on the page background) */
   --sl-color-accent-low: #1c1008;
   --sl-color-accent: #f97316;
   --sl-color-accent-high: #fed7aa;
 
-  /* === Gray Scale === */
+  /* Gray scale */
   --sl-color-gray-1: #fafafa;
   --sl-color-gray-2: #e4e4e7;
   --sl-color-gray-3: #94a3b8;
-  --sl-color-gray-4: #64748b;
+  --sl-color-gray-4: #7c8da8; /* 5.9:1 — was #64748b at 4.2:1 */
   --sl-color-gray-5: #3f3f46;
   --sl-color-gray-6: #27272a;
   --sl-color-gray-7: #18181b;
 
-  /* === Hairline (borders) === */
+  /* Hairlines */
   --sl-color-hairline: rgba(148, 163, 184, 0.15);
   --sl-color-hairline-light: rgba(148, 163, 184, 0.08);
+  --sl-color-hairline-shade: rgba(148, 163, 184, 0.22);
 
-  /* === Black/White === */
+  /* Black / white anchors */
   --sl-color-black: #0a0a0f;
   --sl-color-white: #fafafa;
 
-  /* === Custom: Cyan Secondary Accent === */
+  /* Code */
+  --sl-color-code-bg: #111118;
+
+  /* Secondary accent — cyan */
   --lv-accent-cyan: #22d3ee;
   --lv-accent-cyan-low: #083344;
   --lv-accent-cyan-high: #a5f3fc;
 
-  /* === Code Block Syntax Highlighting === */
-  --sl-color-code-bg: #111118;
+  /* Surfaces */
+  --lv-surface: #111118; /* cards and other raised panels */
+  --lv-bg-glass: rgba(10, 10, 15, 0.85); /* translucent header */
+  --lv-hover-tint: rgba(148, 163, 184, 0.1);
+  --lv-scrollbar-thumb: rgba(148, 163, 184, 0.3);
+  --lv-scrollbar-thumb-hover: rgba(148, 163, 184, 0.5);
+
+  /* Text on a filled accent surface (7.1:1 against the default accent) */
+  --lv-on-accent: #0a0a0f;
+  --lv-accent-hover-mix: #ffffff;
+
+  /* Elevation */
+  --lv-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --lv-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 /* ============================================
-   LIGHT MODE
+   3b. COLOUR PALETTE — LIGHT
    ============================================ */
 
-[data-theme="light"] {
-  /* === Background Colors === */
+:root[data-theme="light"],
+[data-theme="light"] ::backdrop {
+  /* Backgrounds */
   --sl-color-bg: #fafafa;
   --sl-color-bg-nav: #fafafa;
   --sl-color-bg-sidebar: #fafafa;
   --sl-color-bg-inline-code: #f4f4f5;
 
-  /* === Text Colors === */
+  /* Text */
   --sl-color-text: #18181b;
-  --sl-color-text-accent: #0891b2;
+  --sl-color-text-accent: #0e7490; /* 5.1:1 — was #0891b2 at 3.5:1 */
+  --sl-color-text-invert: #fafafa;
 
-  /* === Accent Colors (Orange Primary - darkened for contrast) === */
+  /* Primary accent — orange, darkened so both text and fills pass AA */
   --sl-color-accent-low: #fff7ed;
-  --sl-color-accent: #ea580c;
+  --sl-color-accent: #c2410c; /* 5.0:1 — was #ea580c at 3.4:1 */
   --sl-color-accent-high: #7c2d12;
 
-  /* === Gray Scale === */
+  /* Gray scale */
   --sl-color-gray-1: #18181b;
   --sl-color-gray-2: #3f3f46;
   --sl-color-gray-3: #52525b;
@@ -97,40 +181,54 @@
   --sl-color-gray-6: #e4e4e7;
   --sl-color-gray-7: #f4f4f5;
 
-  /* === Hairline (borders) === */
+  /* Hairlines */
   --sl-color-hairline: rgba(63, 63, 70, 0.15);
   --sl-color-hairline-light: rgba(63, 63, 70, 0.08);
+  --sl-color-hairline-shade: rgba(63, 63, 70, 0.2);
 
-  /* === Black/White === */
-  --sl-color-black: #18181b;
-  --sl-color-white: #fafafa;
+  /* Black / white anchors */
+  --sl-color-black: #ffffff;
+  --sl-color-white: #18181b;
 
-  /* === Custom: Cyan Secondary Accent (darkened for contrast) === */
-  --lv-accent-cyan: #0891b2;
+  /* Code */
+  --sl-color-code-bg: #f4f4f5;
+
+  /* Secondary accent — cyan, darkened for contrast on light backgrounds */
+  --lv-accent-cyan: #0e7490;
   --lv-accent-cyan-low: #ecfeff;
   --lv-accent-cyan-high: #164e63;
 
-  /* === Code Block Background === */
-  --sl-color-code-bg: #f4f4f5;
+  /* Surfaces */
+  --lv-surface: #ffffff;
+  --lv-bg-glass: rgba(250, 250, 250, 0.85);
+  --lv-hover-tint: rgba(63, 63, 70, 0.06);
+  --lv-scrollbar-thumb: rgba(63, 63, 70, 0.3);
+  --lv-scrollbar-thumb-hover: rgba(63, 63, 70, 0.5);
+
+  /* Text on a filled accent surface (5.0:1 against the light accent) */
+  --lv-on-accent: #ffffff;
+  --lv-accent-hover-mix: #000000;
+
+  /* Elevation */
+  --lv-shadow-sm: 0 1px 2px rgba(24, 24, 27, 0.06);
+  --lv-shadow-md: 0 8px 24px rgba(24, 24, 27, 0.1);
 }
 
 /* ============================================
-   TYPOGRAPHY
+   4. TYPOGRAPHY
    ============================================ */
 
 :root {
-  /* Font Families */
   --sl-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, sans-serif;
   --sl-font-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, monospace;
 
-  /* Custom: Heading Font */
+  /* Heading font */
   --lv-font-heading: "Satoshi", "Inter", -apple-system, BlinkMacSystemFont,
     sans-serif;
 }
 
-/* Headings use Satoshi */
 h1,
 h2,
 h3,
@@ -145,6 +243,7 @@ h6,
 .sl-markdown-content h6 {
   font-family: var(--lv-font-heading);
   letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 h1,
@@ -160,303 +259,454 @@ h3,
   font-weight: 700;
 }
 
+/* Keep anchor jumps clear of the sticky header */
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6):target,
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-top: var(--lv-scroll-offset);
+}
+
+/* Prose: avoid orphans, and let long URLs or identifiers wrap instead of
+   overflowing. Deliberately limited to prose — inside table cells this would
+   break short tokens apart rather than letting the table scroll. */
+.sl-markdown-content p,
+.sl-markdown-content li {
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+
 /* Code ligatures */
 code,
 pre {
   font-feature-settings: "liga" 1, "calt" 1;
 }
 
+::selection {
+  background-color: var(--lv-selection-bg);
+  color: var(--sl-color-white);
+}
+
 /* ============================================
-   HEADER & NAVIGATION
+   5. FOCUS VISIBILITY
    ============================================ */
 
-/* Glassmorphism header */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: var(--lv-focus-width) solid var(--sl-color-accent);
+  outline-offset: var(--lv-focus-offset);
+}
+
+/* ============================================
+   6. HEADER & NAVIGATION
+   ============================================ */
+
 header.header {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background-color: var(--lv-bg-glass);
+  backdrop-filter: blur(var(--lv-header-blur));
+  -webkit-backdrop-filter: blur(var(--lv-header-blur));
   border-bottom: 1px solid var(--sl-color-hairline);
 }
 
-[data-theme="dark"] header.header {
-  background-color: rgba(10, 10, 15, 0.85);
-}
-
-[data-theme="light"] header.header {
-  background-color: rgba(250, 250, 250, 0.85);
-}
-
-/* Site title styling */
-.site-title {
+/* Wordmark: plain text colour, accent only on interaction */
+a.site-title {
   font-family: var(--lv-font-heading);
   font-weight: 700;
+  color: var(--sl-color-white);
+  transition: color var(--lv-duration-base) var(--lv-easing);
+}
+
+a.site-title:hover {
+  color: var(--sl-color-accent);
+}
+
+/* Social icons */
+.social-icons a {
+  transition: color var(--lv-duration-base) var(--lv-easing);
+}
+
+.social-icons a:hover {
+  color: var(--sl-color-accent);
 }
 
 /* ============================================
-   SIDEBAR
+   7. SIDEBAR
    ============================================ */
 
-/* Active sidebar item indicator */
-nav.sidebar-content a[aria-current="page"] {
+.sidebar-content a {
+  border-radius: var(--lv-radius-sm);
+  transition: color var(--lv-duration-fast) var(--lv-easing),
+    background-color var(--lv-duration-fast) var(--lv-easing);
+}
+
+.sidebar-content a:hover,
+.sidebar-content a:focus-visible {
+  color: var(--sl-color-white);
+  background-color: var(--lv-hover-tint);
+}
+
+/* Active page: accent text on a faint accent tint, plus a gradient rail */
+.sidebar-content a[aria-current="page"],
+.sidebar-content a[aria-current="page"]:hover,
+.sidebar-content a[aria-current="page"]:focus {
   position: relative;
   color: var(--sl-color-accent);
+  background-color: var(--lv-accent-tint);
   font-weight: 600;
 }
 
-nav.sidebar-content a[aria-current="page"]::before {
+.sidebar-content a[aria-current="page"]::before {
   content: "";
   position: absolute;
-  left: -0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
+  inset-block: 0.15rem;
+  inset-inline-start: 0;
   width: 3px;
-  height: 60%;
-  background: linear-gradient(180deg, var(--sl-color-accent), var(--lv-accent-cyan));
   border-radius: 2px;
+  background: linear-gradient(
+    180deg,
+    var(--sl-color-accent),
+    var(--lv-accent-cyan)
+  );
 }
 
-/* Sidebar link hover */
-nav.sidebar-content a:hover {
+/* Right-hand "On this page" */
+.right-sidebar a {
+  transition: color var(--lv-duration-fast) var(--lv-easing);
+}
+
+.right-sidebar a:hover {
   color: var(--sl-color-accent);
 }
 
 /* ============================================
-   CONTENT AREA
+   8. CONTENT AREA
    ============================================ */
 
-/* Link styling with animated underline */
-.sl-markdown-content a:not(.card):not([class*="button"]) {
+/* Body links: underline grows in on hover, stays underlined on focus */
+.sl-markdown-content
+  a:not(.card):not(.sl-link-card):not([class*="sl-link-button"]) {
   color: var(--lv-accent-cyan);
   text-decoration: none;
   background-image: linear-gradient(currentColor, currentColor);
   background-position: 0% 100%;
   background-repeat: no-repeat;
   background-size: 0% 1px;
-  transition: background-size 0.3s ease, color 0.2s ease;
+  transition: background-size var(--lv-duration-base) var(--lv-easing),
+    color var(--lv-duration-base) var(--lv-easing);
 }
 
-.sl-markdown-content a:not(.card):not([class*="button"]):hover {
+.sl-markdown-content
+  a:not(.card):not(.sl-link-card):not([class*="sl-link-button"]):hover,
+.sl-markdown-content
+  a:not(.card):not(.sl-link-card):not([class*="sl-link-button"]):focus-visible {
   background-size: 100% 1px;
 }
 
 /* ============================================
-   CODE BLOCKS
+   9. CODE BLOCKS
    ============================================ */
 
-/* Code block container */
-.expressive-code,
-pre {
-  border-radius: 8px;
+/* Round the code frame through Expressive Code's own tokens. Setting a border
+   on `.expressive-code` *and* its inner `pre` (as this theme used to do) draws
+   two nested borders with mismatched radii. Only these two tokens are safe to
+   set here: the rest are re-declared per colour mode by Expressive Code itself,
+   which is what keeps code blocks in step with the active theme. */
+.expressive-code {
+  --ec-brdRad: var(--lv-radius-md);
+  --ec-brdCol: var(--sl-color-hairline);
+}
+
+/* Plain <pre> outside a code frame still needs its own box */
+pre:not(:where(.expressive-code *)) {
+  border-radius: var(--lv-radius-md);
   border: 1px solid var(--sl-color-hairline);
 }
 
 /* Inline code */
 :not(pre) > code {
-  border-radius: 4px;
+  border-radius: var(--lv-radius-sm);
   padding: 0.15em 0.4em;
   font-size: 0.9em;
 }
 
 /* Copy button */
 .expressive-code .copy button {
-  transition: color 0.2s ease, background-color 0.2s ease;
+  transition: opacity var(--lv-duration-base) var(--lv-easing),
+    background var(--lv-duration-base) var(--lv-easing),
+    border-color var(--lv-duration-base) var(--lv-easing);
 }
 
 .expressive-code .copy button:hover {
-  color: var(--sl-color-accent);
+  opacity: 1;
 }
 
 /* ============================================
-   BUTTONS
+   10. BUTTONS
    ============================================ */
 
-/* Primary button - orange gradient */
-a.sl-flex:where([class*="primary"]),
-button:where([class*="primary"]) {
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  border: none;
-  border-radius: 8px;
+/* Starlight renders hero/markdown buttons as `<a class="sl-link-button …">`.
+   Its own rules live in a component stylesheet that loads after this one, so
+   the `a` in these selectors is load-bearing: without it the declarations tie
+   on specificity and lose. */
+a.sl-link-button {
+  border-radius: var(--lv-radius-md);
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: background var(--lv-duration-base) var(--lv-easing),
+    border-color var(--lv-duration-base) var(--lv-easing),
+    color var(--lv-duration-base) var(--lv-easing),
+    box-shadow var(--lv-duration-base) var(--lv-easing),
+    transform var(--lv-duration-base) var(--lv-easing);
 }
 
-a.sl-flex:where([class*="primary"]):hover,
-button:where([class*="primary"]):hover {
-  background: linear-gradient(135deg, #fb923c, #f97316);
+a.sl-link-button.primary {
+  background: var(--lv-accent-gradient);
+  border-color: transparent;
+  color: var(--lv-on-accent);
+  box-shadow: var(--lv-shadow-sm);
+}
+
+a.sl-link-button.primary:hover,
+a.sl-link-button.primary:focus-visible {
+  background: var(--lv-accent-gradient-hover);
+  color: var(--lv-on-accent);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 4px 12px var(--lv-accent-glow);
 }
 
-/* Secondary button */
-a.sl-flex:where([class*="secondary"]),
-button:where([class*="secondary"]) {
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.2s ease;
+a.sl-link-button.primary:active {
+  transform: translateY(0);
+  box-shadow: var(--lv-shadow-sm);
 }
 
-a.sl-flex:where([class*="secondary"]):hover,
-button:where([class*="secondary"]):hover {
+a.sl-link-button.secondary {
+  border-color: var(--sl-color-hairline-shade);
+  color: var(--sl-color-white);
+}
+
+a.sl-link-button.secondary:hover,
+a.sl-link-button.secondary:focus-visible {
   border-color: var(--lv-accent-cyan);
+  color: var(--lv-accent-cyan);
+  background-color: var(--lv-hover-tint);
+}
+
+a.sl-link-button.minimal:hover,
+a.sl-link-button.minimal:focus-visible {
   color: var(--lv-accent-cyan);
 }
 
 /* ============================================
-   CARDS & CALLOUTS
+   11. CARDS & CALLOUTS
    ============================================ */
 
-/* Card styling */
-.card {
-  border-radius: 12px;
+:root .card {
+  border-radius: var(--lv-radius-lg);
   border: 1px solid var(--sl-color-hairline);
-  transition: all 0.2s ease;
+  background-color: var(--lv-surface);
 }
 
-.card:hover {
+/* Card icons: Starlight cycles five hues per card (`:nth-child(4n+1)` and
+   friends). Alternate the theme's own two accents instead, so a grid reads as
+   one system — `:nth-child(n)` matches every card and outranks those rules. */
+:root .card:nth-child(n) {
+  --sl-card-border: var(--sl-color-accent);
+  --sl-card-bg: var(--sl-color-accent-low);
+}
+
+:root .card:nth-child(2n) {
+  --sl-card-border: var(--lv-accent-cyan);
+  --sl-card-bg: var(--lv-accent-cyan-low);
+}
+
+/* Only cards that are actually links get hover affordances */
+a.card,
+.sl-link-card {
+  border-radius: var(--lv-radius-lg);
+  transition: border-color var(--lv-duration-base) var(--lv-easing),
+    box-shadow var(--lv-duration-base) var(--lv-easing),
+    transform var(--lv-duration-base) var(--lv-easing);
+}
+
+a.card:hover,
+.sl-link-card:hover {
   border-color: var(--sl-color-accent);
+  box-shadow: var(--lv-shadow-md);
   transform: translateY(-2px);
 }
 
-[data-theme="dark"] .card:hover {
-  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.1);
-}
-
-/* Aside/Callout styling */
+/* Asides / callouts: keep Starlight's semantic hue on the rule and the title,
+   but tint the panel instead of filling it — a saturated block is the loudest
+   thing on an otherwise near-black page. */
 .starlight-aside {
-  border-radius: 8px;
-  border-left-width: 3px;
+  border-radius: var(--lv-radius-md);
+  border-inline-start-width: 3px;
+  background-color: color-mix(
+    in srgb,
+    var(--sl-color-asides-border) 12%,
+    var(--sl-color-bg)
+  );
 }
 
 /* ============================================
-   SEARCH
+   12. SEARCH
    ============================================ */
 
-/* Search input */
-.search-input,
-[data-pagefind-ui] input {
-  border-radius: 8px;
+.header button[data-open-modal] {
+  border-radius: var(--lv-radius-md);
   border: 1px solid var(--sl-color-hairline);
-  transition: border-color 0.2s ease;
+  transition: border-color var(--lv-duration-base) var(--lv-easing),
+    color var(--lv-duration-base) var(--lv-easing);
 }
 
-.search-input:focus,
-[data-pagefind-ui] input:focus {
+.header button[data-open-modal]:hover {
   border-color: var(--sl-color-accent);
-  outline: none;
+  color: var(--sl-color-white);
+}
+
+#starlight__search .pagefind-ui__search-input {
+  border-radius: var(--lv-radius-md);
 }
 
 /* ============================================
-   TABLES
+   13. TABLES
    ============================================ */
 
-.sl-markdown-content table {
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid var(--sl-color-hairline);
+/* Starlight already makes tables `display: block; overflow: auto` so wide
+   tables scroll on narrow screens. This theme used to set `overflow: hidden`
+   here, which clipped those columns away instead — so tables are deliberately
+   left with Starlight's own frameless, scrollable layout, and only the header
+   rule is emphasised. */
+.sl-markdown-content th:not(:where(.not-content *)) {
+  border-bottom: 2px solid var(--sl-color-hairline-shade);
 }
 
-.sl-markdown-content th {
-  background-color: var(--sl-color-gray-7);
-}
-
-[data-theme="dark"] .sl-markdown-content th {
-  background-color: var(--sl-color-gray-6);
+/* Starlight's global `overflow-wrap: anywhere` breaks short identifiers in the
+   middle ("strin/g") when a column gets narrow. Keep code cells intact and let
+   the table scroll instead. */
+.sl-markdown-content :is(td, th) code:not(:where(.not-content *)) {
+  overflow-wrap: normal;
 }
 
 /* ============================================
-   FOOTER
+   14. FOOTER
    ============================================ */
 
 footer {
   border-top: 1px solid var(--sl-color-hairline);
 }
 
-/* ============================================
-   ANIMATIONS
-   ============================================ */
-
-/* Content fade-in */
-.main-frame,
-main {
-  animation: fadeIn 0.3s ease;
+/* Previous/next page links */
+.pagination-links a {
+  border-radius: var(--lv-radius-md);
+  transition: border-color var(--lv-duration-base) var(--lv-easing),
+    box-shadow var(--lv-duration-base) var(--lv-easing);
 }
 
-@keyframes fadeIn {
+.pagination-links a:hover {
+  border-color: var(--sl-color-accent);
+  box-shadow: var(--lv-shadow-sm);
+}
+
+/* ============================================
+   15. MOTION
+   ============================================ */
+
+/* Colour transitions are scoped to the elements that actually change on theme
+   switch or hover — a universal `*` transition makes everything feel laggy. */
+body,
+header.header,
+.sidebar-content,
+.right-sidebar,
+.card,
+.starlight-aside,
+input,
+kbd {
+  transition: background-color var(--lv-duration-base) var(--lv-easing),
+    border-color var(--lv-duration-base) var(--lv-easing),
+    color var(--lv-duration-base) var(--lv-easing);
+}
+
+/* Content fade-in (opacity only — a translate here shifts the first paint) */
+.main-pane {
+  animation: lv-fade-in var(--lv-duration-base) var(--lv-easing);
+}
+
+@keyframes lv-fade-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
-/* Smooth theme transitions */
-*,
-*::before,
-*::after {
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 
-/* Exclude text color from transition to avoid flash */
-a,
-button,
-input,
-code,
-pre {
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-/* ============================================
-   MOBILE RESPONSIVE
-   ============================================ */
-
-@media (max-width: 50rem) {
-  /* Adjust sidebar indicator for mobile */
-  nav.sidebar-content a[aria-current="page"]::before {
-    left: -0.5rem;
+  a.sl-link-button.primary:hover,
+  a.sl-link-button.primary:focus-visible,
+  a.card:hover,
+  .sl-link-card:hover {
+    transform: none;
   }
 }
 
 /* ============================================
-   SCROLLBAR (DARK MODE)
+   16. SCROLLBARS
    ============================================ */
 
-[data-theme="dark"] {
-  scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+:root {
+  scrollbar-color: var(--lv-scrollbar-thumb) transparent;
 }
 
-[data-theme="dark"] ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+::-webkit-scrollbar {
+  width: var(--lv-scrollbar-size);
+  height: var(--lv-scrollbar-size);
 }
 
-[data-theme="dark"] ::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: transparent;
 }
 
-[data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background-color: rgba(148, 163, 184, 0.3);
-  border-radius: 4px;
+::-webkit-scrollbar-thumb {
+  background-color: var(--lv-scrollbar-thumb);
+  border-radius: var(--lv-radius-sm);
 }
 
-[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(148, 163, 184, 0.5);
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--lv-scrollbar-thumb-hover);
 }
 
 /* ============================================
-   PRINT STYLES
+   17. PRINT
    ============================================ */
 
 @media print {
   header.header,
-  nav.sidebar-content,
-  .right-sidebar {
+  .sidebar,
+  .right-sidebar-container,
+  .pagination-links {
     display: none !important;
   }
 
+  .main-pane,
   main {
     max-width: 100% !important;
     margin: 0 !important;
+  }
+
+  .expressive-code,
+  pre {
+    break-inside: avoid;
   }
 }

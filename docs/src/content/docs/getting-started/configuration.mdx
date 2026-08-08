@@ -17,6 +17,22 @@ starlight({
 });
 ```
 
+Two optional settings recolor the theme without a custom stylesheet:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `accentColor` | `string` | `#f97316` | Primary accent — buttons, focus rings, active navigation |
+| `secondaryAccentColor` | `string` | `#22d3ee` | Secondary accent — body links |
+
+```js title="astro.config.mjs"
+starlight({
+  plugins: [luminousVoid({ accentColor: "#a855f7" })],
+});
+```
+
+Both apply to dark and light mode alike. For per-mode values, override the
+custom properties instead — see [Customization](/docs-template/guides/customization/).
+
 ## Starlight Configuration
 
 You can use all standard Starlight configuration options alongside the theme:
@@ -27,10 +43,10 @@ starlight({
   description: "A great project with great docs",
   plugins: [luminousVoid()],
 
-  // Social links
-  social: [
-    { icon: "github", label: "GitHub", href: "https://github.com/you/repo" },
-  ],
+  // Social links (Starlight 0.32 syntax)
+  social: {
+    github: "https://github.com/you/repo",
+  },
 
   // Sidebar navigation
   sidebar: [

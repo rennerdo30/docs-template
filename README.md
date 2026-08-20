@@ -127,7 +127,7 @@ Fonts are pulled from CDNs by `@import` inside `styles.css`: Satoshi from Fontsh
 index.ts        # the Starlight plugin (injects styles.css)
 styles.css      # the entire theme
 docs/           # example Starlight site used as the theme's own documentation
-templates/      # starter astro.config.mjs, package.json and Pages deploy workflow to copy
+templates/      # starter astro.config.mjs, content.config.ts, package.json and Pages deploy workflow to copy
 ```
 
 The `docs/` site is the source for the project documentation. Its Pages deployment is not currently live, so read the pages under `docs/src/content/` in the repository instead.

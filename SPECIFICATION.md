@@ -4,6 +4,8 @@
 
 Dark-first design inspired by renner.dev. Clean, modern, developer-focused aesthetic with excellent readability and a dual-accent color system.
 
+Everything is expressed as custom properties in `styles.css`: Starlight's `--sl-color-*` palette plus a small `--lv-*` token layer for radii, motion, elevation and accent-derived values. Rules further down the stylesheet only reference tokens, so retuning the theme means editing the token blocks.
+
 ## Color System
 
 ### Dark Mode (Default)
@@ -11,10 +13,10 @@ Dark-first design inspired by renner.dev. Clean, modern, developer-focused aesth
 | Token | Value | Usage |
 |-------|-------|-------|
 | Background | `#0a0a0f` | Page background |
-| Background Light | `#111118` | Code blocks, cards |
+| Surface | `#111118` | Cards, code blocks (`--lv-surface`) |
 | Text Primary | `#fafafa` | Headings, important text |
 | Text Secondary | `#94a3b8` | Body text, descriptions |
-| Text Muted | `#64748b` | Captions, metadata |
+| Text Muted | `#7c8da8` | Captions, metadata |
 | Accent Orange | `#f97316` | Primary accent, buttons |
 | Accent Orange Low | `#1c1008` | Accent backgrounds |
 | Accent Orange High | `#fed7aa` | Accent highlights |
@@ -25,76 +27,124 @@ Dark-first design inspired by renner.dev. Clean, modern, developer-focused aesth
 
 ### Light Mode
 
+Light-mode accents are darker than their dark-mode counterparts so that both
+accent-colored text and text drawn on top of an accent fill clear 4.5:1.
+
 | Token | Value | Usage |
 |-------|-------|-------|
 | Background | `#fafafa` | Page background |
-| Background Light | `#f4f4f5` | Code blocks, cards |
+| Surface | `#ffffff` | Cards, raised panels (`--lv-surface`) |
 | Text Primary | `#18181b` | Headings, important text |
-| Text Secondary | `#3f3f46` | Body text, descriptions |
-| Text Muted | `#52525b` | Captions, metadata |
-| Accent Orange | `#ea580c` | Primary accent, buttons |
+| Text Secondary | `#52525b` | Body text, descriptions |
+| Text Muted | `#71717a` | Captions, metadata |
+| Accent Orange | `#c2410c` | Primary accent, buttons |
 | Accent Orange Low | `#fff7ed` | Accent backgrounds |
 | Accent Orange High | `#7c2d12` | Accent highlights |
-| Accent Cyan | `#0891b2` | Links, secondary accent |
+| Accent Cyan | `#0e7490` | Links, secondary accent |
 | Accent Cyan Low | `#ecfeff` | Cyan backgrounds |
 | Accent Cyan High | `#164e63` | Cyan highlights |
 | Border | `rgba(63, 63, 70, 0.15)` | Subtle borders |
 
+### Cascade requirement
+
+Starlight declares its own light palette on `:root[data-theme='light']`. The
+theme's light block must use the same selector shape (`:root[data-theme="light"]`)
+or it loses on specificity and light mode silently falls back to Starlight's
+defaults.
+
+### Accent-derived tokens
+
+Mixed from `--sl-color-accent` at use time, so overriding the accent — directly
+or through the plugin's `accentColor` option — carries through:
+
+| Token | Purpose |
+|-------|---------|
+| `--lv-accent-gradient` | Primary button fill |
+| `--lv-accent-gradient-hover` | Primary button hover fill |
+| `--lv-accent-tint` | Active sidebar item background |
+| `--lv-accent-glow` | Primary button hover shadow |
+| `--lv-selection-bg` | Text selection |
+| `--lv-on-accent` | Text drawn on an accent fill (set per mode) |
+
 ## Typography
 
-| Element | Font | Weight | Size |
-|---------|------|--------|------|
-| H1 | Satoshi | 900 | 2.5rem |
-| H2 | Satoshi | 700 | 1.75rem |
-| H3 | Satoshi | 700 | 1.4rem |
-| Body | Inter | 400 | 1rem |
-| Code | Fira Code | 400 | 0.9rem |
+| Element | Font | Weight |
+|---------|------|--------|
+| H1 | Satoshi | 900 |
+| H2 / H3 | Satoshi | 700 |
+| H4–H6 | Satoshi | inherited from Starlight |
+| Body | Inter | 400 |
+| Code | Fira Code | 400 |
+
+Sizes come from Starlight's fluid `--sl-text-*` scale; the theme only sets the
+families, weights and tighter heading letter-spacing. Headings use
+`text-wrap: balance`, prose uses `text-wrap: pretty`.
 
 ### Font Loading
 - Satoshi: Fontshare API
 - Inter: Google Fonts
 - Fira Code: Google Fonts (with ligatures enabled)
 
-## Spacing
+## Radii and motion
 
-| Token | Value |
-|-------|-------|
-| Border Radius Small | 4px |
-| Border Radius Medium | 8px |
-| Border Radius Large | 12px |
+| Token | Value | Applied to |
+|-------|-------|------------|
+| `--lv-radius-sm` | `0.25rem` | Inline code, sidebar items |
+| `--lv-radius-md` | `0.5rem` | Buttons, code frames, asides, search |
+| `--lv-radius-lg` | `0.75rem` | Cards |
+| `--lv-duration-fast` | `120ms` | Navigation hover |
+| `--lv-duration-base` | `200ms` | Everything else |
+| `--lv-easing` | `cubic-bezier(0.4, 0, 0.2, 1)` | All transitions |
+
+Transitions are scoped to the elements that actually change (theme switch,
+hover) rather than applied with a universal selector. All animation and movement
+is disabled under `prefers-reduced-motion: reduce`.
 
 ## Effects
 
 ### Glassmorphism (Header)
 ```css
-backdrop-filter: blur(12px);
-background-color: rgba(10, 10, 15, 0.85); /* dark */
-background-color: rgba(250, 250, 250, 0.85); /* light */
+backdrop-filter: blur(var(--lv-header-blur)); /* 12px */
+background-color: var(--lv-bg-glass);
 ```
 
 ### Active Navigation Indicator
 ```css
-background: linear-gradient(180deg, #f97316, #22d3ee);
-width: 3px;
-border-radius: 2px;
+/* 3px rail inside the active sidebar item, plus an accent tint behind it */
+background: linear-gradient(180deg, var(--sl-color-accent), var(--lv-accent-cyan));
 ```
 
 ### Link Hover Animation
 ```css
 background-image: linear-gradient(currentColor, currentColor);
-background-size: 0% 1px; /* grows to 100% on hover */
-transition: background-size 0.3s ease;
+background-size: 0% 1px; /* grows to 100% on hover or keyboard focus */
+transition: background-size var(--lv-duration-base) var(--lv-easing);
+```
+
+### Focus ring
+```css
+outline: var(--lv-focus-width) solid var(--sl-color-accent);
+outline-offset: var(--lv-focus-offset);
 ```
 
 ## Accessibility
 
-All color combinations meet WCAG 2.1 AA standards:
+Measured with the WCAG 2.1 relative-luminance formula against the page
+background of the respective mode:
 
 | Combination | Contrast Ratio | Level |
 |-------------|----------------|-------|
-| Text on dark bg | 15.3:1 | AAA |
-| Secondary text on dark bg | 7.2:1 | AAA |
-| Orange on dark bg | 4.6:1 | AA (large text) |
-| Cyan on dark bg | 4.8:1 | AA |
-| Text on light bg | 15.3:1 | AAA |
-| Secondary text on light bg | 7.2:1 | AAA |
+| Body text on background (dark) | 18.9:1 | AAA |
+| Secondary text on background (dark) | 7.7:1 | AAA |
+| Muted text on background (dark) | 5.9:1 | AA |
+| Orange accent on background (dark) | 7.0:1 | AAA |
+| Cyan accent on background (dark) | 10.9:1 | AAA |
+| Button label on orange fill (dark) | 7.0:1 | AAA |
+| Body text on background (light) | 17.0:1 | AAA |
+| Secondary text on background (light) | 7.4:1 | AAA |
+| Muted text on background (light) | 4.6:1 | AA |
+| Orange accent on background (light) | 5.0:1 | AA |
+| Cyan accent on background (light) | 5.1:1 | AA |
+| Button label on orange fill (light) | 5.2:1 | AA |
+
+Custom accent colors are not checked for you — the plugin injects them as-is.

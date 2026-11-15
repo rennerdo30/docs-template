@@ -42,7 +42,7 @@
     "@astrojs/starlight": ">=0.30.0"
   },
   "devDependencies": {
-    "@astrojs/starlight": "^0.41.7",
+    "@astrojs/starlight": "^0.42.10",
     "astro": "^7.2.4",
     "typescript": "^5.7.0"
   }
